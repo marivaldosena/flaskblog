@@ -42,12 +42,22 @@ def register():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
 
-    return render_template('form.html', title='Register', form=form)
+    return render_template('register.html', title='Register', form=form)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    return render_template('form.html', title='Log in', form=form)
+
+    if form.validate_on_submit():
+        if form.email.data == 'admin@email.com' and \
+                        form.password.data == 'password':
+            flash('You have been logged in!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login unsuccessful. Please check username and password.', 'danger')
+        
+
+    return render_template('login.html', title='Log in', form=form)
 
 if __name__ == '__main__':
     app.run()

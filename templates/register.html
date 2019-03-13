@@ -2,24 +2,29 @@
 
 {% from "macros.html" import field_with_validation with context %}
 
-
 {% block content %}
   <div class="content-section">
     <form action="" method="POST">
       {{ form.hidden_tag() }}
       <fieldset class="form-group">
         <legend>{{ title }}</legend>
-        {% for field in form %}
+  
         <div class="form-group">
-            {% if field.name not in ["csrf_token", "submit"] %}
-              {{ field.label(class="form-control-label") }}
-            {% endif %}
-
-            {% if field.name != "submit" %}
-              {{ field_with_validation(field) }}
-            {% endif %}
+          {{ field_with_validation(form.username) }}  
         </div>
-        {% endfor %}
+
+        <div class="form-group">
+          {{ field_with_validation(form.email )}}
+        </div>
+
+        <div class="form-group">
+          {{ field_with_validation(form.password) }}
+        </div>
+
+        <div class="form-group">
+          {{ field_with_validation(form.password_confirm) }}
+        </div>
+      
       </fieldset>
       <div class="form-group">
         {{ form.submit(class='btn btn-outline-info') }}
@@ -27,11 +32,9 @@
     </form>
   </div>
 
-  {% if title == "Register" %}
   <div class="border-top pt-3">
     <small class="text-muted">
       Already Have An Account? <a href="{{ url_for('login') }}" class="ml-2">Sign In</a>
     </small>
   </div>
-  {% endif %}
 {% endblock %}
