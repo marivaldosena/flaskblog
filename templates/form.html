@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="content-section">
+    <form action="" method="POST">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend>{{ title }}</legend>
+        {% for field in form %}
+        <div class="form-group">
+            {% if field.name not in ["csrf_token", "submit"] %}
+              {{ field.label(class="form-control-label") }}
+            {% endif %}
+
+            {% if field.name != "submit" %}
+              {% if field.errors %}
+                {{ field(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in field.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ field(class="form-control form-control-lg") }}
+              {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+      </fieldset>
+      <div class="form-group">
+        {{ form.submit(class='btn btn-outline-info') }}
+      </div>
+    </form>
+  </div>
+
+  {% if title == "Register" %}
+  <div class="border-top pt-3">
+    <small class="text-muted">
+      Already Have An Account? <a href="{{ url_for('login') }}" class="ml-2">Sign In</a>
+    </small>
+  </div>
+  {% endif %}
+{% endblock %}
