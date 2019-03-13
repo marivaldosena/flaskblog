@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 app = Flask(__name__)
 
@@ -20,6 +21,7 @@ posts = [
     }
 ]
 
+app.secret_key = os.getenv('APP_SECRET_KEY') or '3676a9fc1001dca88437094cc3b1610b'
 
 @app.route('/')
 @app.route('/home')
@@ -29,6 +31,7 @@ def home():
 @app.route('/about')
 def about():
     return render_template('about.html')
+    
 
 if __name__ == '__main__':
     app.run()

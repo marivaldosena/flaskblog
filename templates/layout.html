@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   {% if title %}
-  <title>{{ title }}</title>
+  <title>Flask Blog | {{ title }}</title>
   {% else %}
   <title>Flask Blog</title>
   {% endif %}
@@ -28,10 +28,10 @@
             <a href="/" class="nav-item nav-link">Home</a>
             <a href="/about" class="nav-item nav-link">About</a>
           </div>
-        </div>
-        <div class="navbar-nav">
-          <a href="/login" class="nav-item nav-link">Login</a>
-          <a href="/register" class="nav-item nav-link">Register</a>
+          <div class="navbar-nav">
+            <a href="/login" class="nav-item nav-link">Login</a>
+            <a href="/register" class="nav-item nav-link">Register</a>
+          </div>
         </div>
       </div>
     </nav>
