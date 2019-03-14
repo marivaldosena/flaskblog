@@ -12,6 +12,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('APP_DATABASE_URL') or 'postgr
 db = SQLAlchemy(app)
 
 class User(db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -26,11 +28,13 @@ class User(db.Model):
         return f"User('{self.username}', '{self.email}')"
 
 class Post(db.Model):
+    __tablename__ = 'posts'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
@@ -42,6 +46,7 @@ class Post(db.Model):
 @app.route('/')
 @app.route('/home')
 def home():
+    posts = Post.query.all()[:10]
     return render_template('index.html', posts=posts)
 
 @app.route('/about')

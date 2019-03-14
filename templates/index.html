@@ -2,15 +2,28 @@
 
 {% block content %}
   {% for post in posts %}
-      <article class="media content-section">
-        <div class="media-body">
-          <div class="article-metadata">
-            <a href="#" class="mr-2">{{ post.author }}</a>
-            <small class="text-muted">{{ post.date_posted }}</small>
-          </div>
-          <h2><a href="#" class="article-title">{{ post.title }}</a></h2>
-          <p class="article-content">{{ post.content }}</p>
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          <a href="#" class="mr-2">{{ post.author.username }}</a>
+          <small class="text-muted">{{ post.date_posted }}</small>
         </div>
-      </article>
+        <h2><a href="#" class="article-title">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content }}</p>
+      </div>
+    </article>
+  {% else %}
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          <h4>
+            There's no posts to display!
+          </h4>
+        </div>
+        <p class="article-content">
+          Please add some posts to help your users enjoy what you have to offer!
+        </p>
+      </div>
+    </article>
   {% endfor %}
 {% endblock %}
