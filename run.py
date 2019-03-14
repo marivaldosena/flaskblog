@@ -1,29 +1,43 @@
 import os
+from datetime import datetime
 from flask import Flask, render_template, flash, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
 
-posts = [
-    {
-        'author': 'Marivaldo Sena',
-        'title': 'Quisque lacinia ultricies ipsum sed consectetur',
-        'content': '''
-            Quisque lacinia ultricies ipsum sed consectetur. Donec ultrices tincidunt tempus. Donec sed consectetur elit. Curabitur quis commodo ex. Phasellus consequat sagittis condimentum. Phasellus sollicitudin felis a ullamcorper mattis. Sed erat nisi, luctus quis ipsum ut, volutpat tempus felis. Fusce gravida tincidunt risus, sit amet dictum lorem iaculis quis.
-        ''',
-        'date_posted': '2019-03-12'
-    },
-    {
-        'author': 'Marivaldo Sena',
-        'title': 'Donec nec diam vitae enim feugiat pretium',
-        'content': '''
-            Phasellus hendrerit interdum tincidunt. Quisque aliquam aliquet lectus, eu pellentesque eros eleifend at. Suspendisse nisi tortor, scelerisque ut tellus id, vestibulum bibendum arcu. Maecenas molestie iaculis odio, ac tincidunt mauris lobortis vel. Praesent sit amet metus vel elit ornare auctor. Vestibulum nec augue et diam ullamcorper cursus. Nam viverra consequat ornare. Pellentesque ut purus non elit dignissim efficitur. Aenean posuere diam felis, vitae lacinia ipsum semper eu. Aliquam mi erat, imperdiet a fringilla id, ultricies in nulla. Integer condimentum ultrices ante, ac pharetra dolor venenatis et. Sed pharetra, metus ac sagittis accumsan, mi purus pretium tellus, eu sodales metus libero quis enim. Nullam vulputate rutrum purus, sed dictum tortor cursus eu. Aenean id aliquet dolor, et tempor lorem. Nulla facilisi.
-        ''',
-        'date_posted': '2019-03-12'
-    }
-]
+app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY') or '3676a9fc1001dca88437094cc3b1610b'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('APP_DATABASE_URL') or 'postgresql://localhost/flaskblog_dev'
 
-app.secret_key = os.getenv('APP_SECRET_KEY') or '3676a9fc1001dca88437094cc3b1610b'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    password = db.Column(db.String(60), nullable=False)
+    posts = db.relationship('Post', backref='author', lazy=True)
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
+
+    def __str__(self):
+        return f"User('{self.username}', '{self.email}')"
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Post('{self.title}', '{self.date_posted}')"
+
+    def __str__(self):
+        return f"Post('{self.title}', '{self.date_posted}')"
+
 
 @app.route('/')
 @app.route('/home')
