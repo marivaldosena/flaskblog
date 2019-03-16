@@ -1,11 +1,12 @@
 import os
 import secrets
 from PIL import Image
-from flask import Flask, render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, \
+    redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, login_user, current_user, logout_user, \
-                        login_required
+from flask_login import LoginManager, \
+    login_user, current_user, logout_user, login_required
 
 app = Flask(__name__)
 
@@ -21,12 +22,13 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 from models import User, Post
-from forms import RegistrationForm, LoginForm, UpdateAccountForm
+from forms import RegistrationForm, LoginForm, UpdateAccountForm, \
+    PostForm
 
 @app.route('/')
 @app.route('/home')
 def home():
-    posts = Post.query.all()[:10]
+    posts = Post.query.all()
     return render_template('index.html', posts=posts)
 
 
@@ -105,6 +107,23 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account Info',
                         image_file=image_file, form=form)
+
+
+@app.route('/posts/new', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data,
+            author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post has been created!', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('posts/new.html', title='New Post', form=form)
+
 
 
 def save_picture(form_picture):
