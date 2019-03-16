@@ -125,6 +125,12 @@ def new_post():
     return render_template('posts/new.html', title='New Post', form=form)
 
 
+@app.route('/posts/<int:post_id>')
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('posts/show.html', title=post.title, post=post)
+
+
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
