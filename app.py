@@ -2,7 +2,7 @@ import os
 import secrets
 from PIL import Image
 from flask import Flask, render_template, flash, \
-    redirect, url_for, request
+    redirect, url_for, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, \
@@ -106,7 +106,7 @@ def account():
 
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account Info',
-                        image_file=image_file, form=form)
+        image_file=image_file, form=form)
 
 
 @app.route('/posts/new', methods=['GET', 'POST'])
@@ -122,15 +122,51 @@ def new_post():
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
 
-    return render_template('posts/new.html', title='New Post', form=form)
+    return render_template('posts/new.html',
+        title='New Post', form=form)
 
 
 @app.route('/posts/<int:post_id>')
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('posts/show.html', title=post.title, post=post)
+    return render_template('posts/show.html',
+        title=post.title, post=post)
 
+@app.route('/posts/<int:post_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if post.author != current_user:
+        abort(403)
 
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        flash('Your post has been updated!', 'success')
+        return redirect(url_for('show_post', post_id=post.id))
+        
+    form.title.data = post.title
+    form.content.data = post.content
+
+    return render_template('posts/new.html',
+        title='Update Post', post=post, form=form)
+
+@app.route('/posts/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if post.author != current_user:
+        abort(403)
+
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted.', 'success')
+    return redirect(url_for('home'))
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
